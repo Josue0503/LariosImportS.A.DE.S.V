@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Larios Import</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <script>
+        if (sessionStorage.getItem("login") !== "true") {
+            window.location.href = "login.html";
+        }
+
+        // Función de cierre de sesión con animación
+        function cerrarSesion() {
+            const logoutScreen = document.getElementById("logout-screen");
+            logoutScreen.style.display = "flex";
+            
+            // Esperamos 3 segundos para que Stanley vea el mensaje y el logo antes de salir
+            setTimeout(() => {
+                sessionStorage.removeItem("login");
+                window.location.href = "login.html";
+            }, 3000);
+        }
+    </script>
+
+    <style>
+        :root {
+            --blue-larios: #1e40af;
+            --blue-dark: #0f172a;
+            --green-btn: #059669;
+            --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #f8fafc 100%);
+            --text-main: #1e293b;
+            --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --border-radius: 16px;
+            --accent-color: #3b82f6;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* --- Pantalla de Despedida Animada --- */
+        #logout-screen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: white;
+            display: none; /* Se activa por JS */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .logout-content { text-align: center; }
+        
+        .logout-logo {
+            width: 250px;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        .logout-msg {
+            font-size: 24px;
+            color: var(--blue-dark);
+            font-weight: 600;
+            opacity: 0;
+            animation: slideUp 0.8s forwards 0.3s;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { 
+            from { opacity: 0; transform: translateY(20px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        /* ------------------------------------- */
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto 40px;
+            padding: 20px 30px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+        }
+
+        .logo-img { width: 180px; }
+
+        .btn-logout {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-logout:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
+        }
+
+        .main-layout {
+            display: grid; grid-template-columns: 1fr 1.2fr; gap: 30px;
+            max-width: 1200px; margin: 0 auto;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .card-title {
+            font-size: 18px; font-weight: bold; margin-bottom: 20px;
+            color: var(--blue-dark); border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;
+        }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .field-group { margin-bottom: 15px; }
+        label { display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px; }
+        
+        input, select {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            font-size: 14px;
+            box-sizing: border-box;
+            background: rgba(255, 255, 255, 0.8);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .file-upload-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .file-dropzone {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            width: 100%;
+            min-height: 72px;
+            padding: 16px 18px;
+            border: 2px dashed rgba(59, 130, 246, 0.3);
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.6);
+            color: var(--text-main);
+            transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+
+        .file-dropzone.dragover {
+            border-color: var(--accent-color);
+            background: rgba(59, 130, 246, 0.1);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .file-upload-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 20px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--blue-larios), #1d4ed8);
+            color: white;
+            border: 1px solid transparent;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .file-upload-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(30, 64, 175, 0.3);
+        }
+
+        .file-name {
+            flex: 1;
+            min-width: 0;
+            color: #475569;
+            font-size: 14px;
+            line-height: 1.4;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        input[type="file"] {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+
+        input[readonly] { background-color: #f8fafc; font-weight: bold; color: var(--blue-larios); }
+
+        .btn-calc {
+            width: 100%;
+            background: linear-gradient(135deg, var(--green-btn), #047857);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-calc:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(5, 150, 105, 0.3);
+        }
+
+        .btn-pdf {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 14px;
+            border-radius: 12px;
+            margin-top: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            display: none;
+            transition: background 0.2s ease;
+        }
+
+        .btn-pdf:hover {
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .btn-reset {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 14px;
+            border-radius: 12px;
+            margin-top: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-main);
+            transition: background 0.2s ease;
+        }
+
+        .btn-reset:hover {
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .result-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+        .comparative-image {
+            display: none;
+            margin: 0 auto 20px;
+            text-align: center;
+        }
+
+        .comparative-image img {
+            max-width: 280px;
+            max-height: 220px;
+            width: auto;
+            height: auto;
+            border-radius: 12px;
+            object-fit: contain;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        .report-info {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .report-info .info-item {
+            flex: 1;
+            min-width: 200px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .report-info .info-item span {
+            display: block;
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .report-info .info-item strong {
+            display: block;
+            font-size: 18px;
+            color: var(--text-main);
+            line-height: 1.3;
+        }
+
+        .opt-card {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .opt-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .opt-header {
+            background: var(--blue-dark); color: white; text-align: center;
+            padding: 12px; font-weight: bold; font-size: 13px; text-transform: uppercase;
+        }
+        .opt-header.blue { background: var(--blue-larios); }
+
+        .recommended-badge {
+            background: #ffd700; color: #000; font-size: 10px;
+            font-weight: 800; padding: 4px 8px; border-radius: 4px;
+            position: absolute; top: 8px; right: 8px; z-index: 10;
+        }
+
+        .opt-cif { text-align: center; padding: 15px; border-bottom: 1px solid #f1f5f9; }
+        .opt-cif span { font-size: 11px; color: #94a3b8; display: block; }
+        .opt-cif b { font-size: 22px; color: var(--blue-larios); }
+
+        .cat-tag { font-size: 10px; font-weight: 800; color: #94a3b8; padding: 12px 15px 4px; display: flex; align-items: center; gap: 6px; text-transform: uppercase; }
+        .item-row { display: flex; justify-content: space-between; padding: 4px 15px; font-size: 12.5px; }
+        .item-row b { color: #1e293b; }
+
+        .total-box { background: #f8fafc; padding: 15px; text-align: center; border-top: 2px solid #f1f5f9; margin-top: auto; }
+        .total-box h2 { margin: 2px 0 0; color: var(--green-btn); font-size: 24px; }
+
+        .unavailable-card {
+            border: 2px dashed #fca5a5;
+            background: #fff1f2;
+            color: #991b1b;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 20px;
+            text-align: center;
+            min-height: 220px;
+        }
+
+        .unavailable-card .opt-header {
+            background: #991b1b;
+        }
+
+        .unavailable-message {
+            margin-top: 20px;
+            font-size: 16px;
+            font-weight: 700;
+            color: #991b1b;
+        }
+
+        .disclaimer {
+            grid-column: span 2;
+            font-size: 10px;
+            color: #64748b;
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            border-top: 1px dashed #cbd5e1;
+            line-height: 1.4;
+        }
+
+        @media print {
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .ui-input-section, .btn-logout, .btn-pdf, #logout-screen { display: none !important; }
+            body { padding: 0; background: white !important; }
+            header { border-bottom: 2px solid var(--blue-larios); padding-bottom: 10px; }
+            .main-layout { display: block !important; }
+            #area-impresion { display: block !important; width: 100% !important; }
+            #pdf-columnas, .report-info, .disclaimer { display: block !important; }
+            .result-container { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 15px !important; }
+            .opt-card { page-break-inside: avoid !important; break-inside: avoid !important; }
+            .disclaimer { display: block !important; }
+            #imp-imagen, .comparative-image { display: block !important; }
+            .comparative-image img { max-width: 100% !important; }
+        }
+
+        @media (max-width: 900px) {
+            body { padding: 15px; }
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+                padding: 20px;
+            }
+            .logo-img { width: 150px; }
+            .main-layout { grid-template-columns: 1fr; }
+            .ui-input-section, #area-impresion { width: 100%; }
+            .card, .opt-card { border-radius: 20px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .result-container { display: grid; grid-template-columns: 1fr; }
+            .report-info { display: grid; grid-template-columns: 1fr; }
+            .report-info .info-item { min-width: auto; }
+            .opt-card { margin-bottom: 20px; }
+            .item-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+            .item-row b { display: block; }
+            .cat-tag { padding: 10px 12px; }
+            .total-box { padding: 18px; }
+            .disclaimer { padding: 14px; }
+        }
+
+        @media (max-width: 640px) {
+            body { padding: 12px; }
+            header { padding: 15px; }
+            .btn-logout { width: 100%; justify-content: center; }
+            .card { padding: 25px; }
+            .login-card, .card { width: 100%; }
+            .field-group input, .field-group select { font-size: 15px; padding: 14px; }
+            .btn-calc, .btn-pdf { padding: 16px; font-size: 15px; }
+            .logout-logo { width: 220px; }
+            .logout-msg { font-size: 20px; }
+            .recommended-badge { top: 10px; right: 10px; font-size: 9px; }
+            .opt-header, .cat-tag { font-size: 12px; }
+            .item-row { font-size: 12px; padding: 6px 12px; }
+            .total-box h2 { font-size: 20px; }
+            .disclaimer { font-size: 11px; }
+        }
+
+        .toggle-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: white !important;
+            border: none !important;
+            padding: 14px 24px !important;
+            border-radius: 50px !important;
+            cursor: pointer !important;
+            font-weight: 700 !important;
+            font-size: 15px !important;
+            width: 100% !important;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .toggle-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            transition: left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: -1;
+        }
+
+        .toggle-btn:hover {
+            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.6) !important;
+            transform: translateY(-3px) !important;
+        }
+
+        .toggle-btn.active {
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.5) !important;
+        }
+
+        .toggle-btn.active::before {
+            left: 0;
+        }
+
+        .toggle-label {
+            display: inline-block;
+            min-width: 100px;
+            position: relative;
+            z-index: 1;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Pantalla de Despedida -->
+    <div id="logout-screen">
+        <div class="logout-content">
+            <img src="imagenes/logo.PNG" alt="Larios Import" class="logout-logo">
+            <div class="logout-msg">Nos vemos pronto, Stanley Villatoro</div>
+        </div>
+    </div>
+
+    <header>
+        <img src="imagenes/logo.PNG" alt="Larios Import" class="logo-img">
+        <button class="btn-logout" onclick="cerrarSesion()">
+            <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+        </button>
+    </header>
+
+    <div class="main-layout">
+        <div class="ui-input-section">
+            <div class="card">
+                <div class="card-title">Configuración de Importación</div>
+                
+                <div class="form-grid">
+                    <div class="field-group"><label>Vehículo</label><input type="text" id="vehiculo" placeholder="Ej: Honda CR-V"></div>
+                    <div class="field-group"><label>Lote #</label><input type="text" id="lote" placeholder="00000000"></div>
+                </div>
+
+                <div class="field-group">
+                    <label>Captura de Pantalla (Opcional)</label>
+                    <div class="file-upload-wrapper">
+                        <div id="file-dropzone" class="file-dropzone" tabindex="0">
+                            <label for="captura" class="file-upload-button"><i class="fas fa-file-image"></i> Seleccionar imagen</label>
+                            <span id="file-name" class="file-name">Arrastra la imagen aquí o selecciónala</span>
+                        </div>
+                        <input type="file" id="captura" accept="image/*" onchange="mostrarImagen()">
+                    </div>
+                    <img id="preview-imagen" style="max-width: 100%; margin-top: 10px; display: none;" alt="Captura de pantalla">
+                </div>
+
+                <div class="field-group">
+                    <label>Estado Subasta</label>
+
+                <select id="estado" onchange="cargarPatios(); actualizarCategoriasPTP();">
+    <option value="">Seleccione...</option>
+</select>
+                </div>
+                
+                <div class="field-group">
+                    <label>Ciudad (Patio)</label>
+                    <input type="text" id="buscar" placeholder="Filtrar ciudad..." onkeyup="filtrarPatios()" style="margin-bottom: 5px;">
+                    <select id="patio"></select>
+                </div>
+
+                <div class="form-grid">
+                    <div class="field-group"><label>Bid (Oferta USD)</label><input type="number" id="bid_subasta" oninput="calcularFacturaAutomatica()"></div>
+                    <div class="field-group"><label>Factura Subasta</label><input type="number" id="factura" readonly></div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="field-group">
+                        <label>Tipo de Cálculo</label>
+                        <button type="button" id="toggleMoto" class="toggle-btn" onclick="toggleModoMoto()"><span class="toggle-label">Vehículo</span></button>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="field-group"><label>Otros (Opcional)</label><input type="number" id="otros" placeholder="0" value="0"></div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="field-group">
+                        <label>Tamaño</label>
+                        <select id="tamano">
+                            <option value="pequeno">Vehículo Pequeño (Hasta 15 pies)</option>
+                            <option value="especial">Especial (Juke, Soul, HRV, etc.)</option>
+                            <option value="mediano">Vehículo Mediano (Hasta 16 pies)</option>
+                            <option value="grande">Vehículo Grande (Hasta 16 pies 11")</option>
+                            <option value="extra">Vehículo Extra Grande (Hasta 17 pies 11")</option>
+                            <option value="extra2">Vehículo Extra Extra Grande (+18 pies)</option>
+                            <option value="moto">Solo Motocicleta</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label>Tamaño Naviera 2</label>
+<select id="tamanoPTP" onchange="calcular()">
+    <option value="">-- Seleccione un Estado primero --</option>
+</select>
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="field-group">
+                        <label>Cilindrada / Impuesto</label>
+                        <select id="tipo">
+                            <option value="auto_menor_1300">Automovil < 1300cc (25%)</option>
+                            <option value="auto_mayor_1300">Automovil > 1300cc (25%)</option>
+                            <option value="auto_mayor_2000">Automovil > 2000cc (30%)</option>
+                            <option value="auto_mayor_2000_awd">Automovil > 2000cc AWD (30%)</option>
+                            <option value="pickups">Pickups (5%)</option>
+                            <option value="vehiculo_4x4">Vehiculo 4x4 (30%)</option>
+                            <option value="camion_4_20">Camiones 4-20T (1%)</option>
+                            <option value="moto_hasta_250">Moto < 250cc (15%)</option>
+                            <option value="moto_mayor_250">Moto > 250cc (15%)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn-calc" onclick="calcular()">Generar Presupuesto</button>
+                <button class="btn-reset" onclick="resetForm()"><i class="fas fa-undo"></i> Reiniciar</button>
+                <button id="btnPdf" class="btn-pdf" onclick="imprimirReporte()" disabled><i class="fas fa-file-pdf"></i> Imprimir Reporte</button>
+            </div>
+        </div>
+
+        <div id="area-impresion">
+            <div id="report-info" class="report-info" style="display:none;">
+                <div class="info-item">
+                    <span>Vehículo</span>
+                    <strong id="imp-vehiculo">-</strong>
+                </div>
+                <div class="info-item">
+                    <span>Número de lote</span>
+                    <strong id="imp-lote">-</strong>
+                </div>
+            </div>
+            <div class="card-title">Resultados Comparativos</div>
+            <div id="imp-imagen" class="comparative-image">
+                <img id="imp-preview-imagen" alt="Captura de pantalla">
+            </div>
+            <div id="pdf-columnas" class="result-container"></div>
+            <div id="disclaimer-text" class="disclaimer" style="display:none;">
+                * NOTA IMPORTANTE: Los valores presentados son aproximaciones basadas en las tarifas actuales de subastas, navieras y aduana. 
+                Los impuestos son calculados sobre el valor CIF. Este presupuesto no incluye reparaciones, repuestos o inspecciones adicionales 
+                fuera de lo detallado. Precios sujetos a cambios según fluctuaciones del mercado.
+            </div>
+        </div>
+    </div>
+
+    <script src="matus.js"></script>
+    <script src="PDF_DATOS_EXTRAIDOS.js"></script>
+    <script src="ptp.js"></script>
+    <script src="iaa.js"></script>
+    <script src="moto.js"></script>
+
+    <script>
+        function mostrarImagen() {
+            const fileInput = document.getElementById("captura");
+            const fileNameLabel = document.getElementById("file-name");
+            const preview = document.getElementById("preview-imagen");
+            const file = fileInput.files[0];
+            if (file) {
+                fileNameLabel.textContent = file.name;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = "block";
+                };
+                reader.readAsDataURL(file);
+            } else {
+                fileNameLabel.textContent = "Arrastra la imagen aquí o selecciónala";
+                preview.style.display = "none";
+            }
+        }
+
+        function resetForm() {
+            const fields = ["vehiculo", "lote", "buscar", "bid_subasta", "factura", "otros"];
+            fields.forEach(id => document.getElementById(id).value = id === "otros" ? "0" : "");
+            document.getElementById("estado").selectedIndex = 0;
+            document.getElementById("patio").innerHTML = "";
+            document.getElementById("tamano").selectedIndex = 0;
+            document.getElementById("tipo").selectedIndex = 0;
+
+            const fileInput = document.getElementById("captura");
+            const fileNameLabel = document.getElementById("file-name");
+            const preview = document.getElementById("preview-imagen");
+            const impPreview = document.getElementById("imp-preview-imagen");
+            const impImagen = document.getElementById("imp-imagen");
+            fileInput.value = "";
+            fileNameLabel.textContent = "Arrastra la imagen aquí o selecciónala";
+            preview.src = "";
+            preview.style.display = "none";
+            if (impPreview) impPreview.src = "";
+            if (impImagen) impImagen.style.display = "none";
+
+            document.getElementById("report-info").style.display = "none";
+            const btnPdf = document.getElementById("btnPdf");
+            btnPdf.style.display = "none";
+            btnPdf.disabled = true;
+            document.getElementById("disclaimer-text").style.display = "none";
+            document.getElementById("pdf-columnas").innerHTML = "";
+            document.getElementById("imp-vehiculo").textContent = "-";
+            document.getElementById("imp-lote").textContent = "-";
+        }
+
+        function configurarDropzone() {
+            const dropzone = document.getElementById('file-dropzone');
+            const fileInput = document.getElementById('captura');
+            const fileNameLabel = document.getElementById('file-name');
+
+            const setDropzoneState = (active) => {
+                dropzone.classList.toggle('dragover', active);
+            };
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropzone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setDropzoneState(true);
+                });
+            });
+
+            ['dragleave', 'dragend', 'drop'].forEach(eventName => {
+                dropzone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (eventName !== 'drop') setDropzoneState(false);
+                });
+            });
+
+            dropzone.addEventListener('drop', (e) => {
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    const transfer = new DataTransfer();
+                    Array.from(files).forEach(file => transfer.items.add(file));
+                    fileInput.files = transfer.files;
+                    fileNameLabel.textContent = files[0].name;
+                    mostrarImagen();
+                }
+                setDropzoneState(false);
+            });
+
+            dropzone.addEventListener('click', (e) => {
+                if (e.target.closest('label') || e.target === fileInput) return;
+                fileInput.click();
+            });
+            dropzone.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    fileInput.click();
+                }
+            });
+
+            fileInput.addEventListener('change', () => {
+                const file = fileInput.files[0];
+                if (file) {
+                    fileNameLabel.textContent = file.name;
+                } else {
+                    fileNameLabel.textContent = 'Arrastra la imagen aquí o selecciónala';
+                }
+            });
+        }
+
+        let modoMoto = false;
+
+        function toggleModoMoto() {
+            modoMoto = !modoMoto;
+            const btn = document.getElementById('toggleMoto');
+            const label = btn.querySelector('.toggle-label');
+            
+            if (modoMoto) {
+                btn.classList.add('active');
+                label.textContent = 'MOTO';
+            } else {
+                btn.classList.remove('active');
+                label.textContent = 'Vehículo';
+            }
+            
+            calcularFacturaAutomatica();
+        }
+
+        function calcularFacturaAutomatica() {
+            const bidVal = parseFloat(document.getElementById("bid_subasta").value.replace(',', '.'));
+            
+            if (!isNaN(bidVal) && bidVal > 0) {
+                if (modoMoto && typeof Motocicleta === 'function') {
+                    const motoData = Motocicleta(bidVal);
+                    document.getElementById("factura").value = (bidVal + motoData.total).toFixed(2);
+                } else if (!modoMoto && typeof calcularFeesIAA === 'function') {
+                    document.getElementById("factura").value = (bidVal + calcularFeesIAA(bidVal)).toFixed(2);
+                }
+            }
+        }
+
+        function imprimirReporte() {
+            const btnPdf = document.getElementById("btnPdf");
+            if (btnPdf.disabled) {
+                alert("Genere primero el presupuesto para imprimir el reporte.");
+                return;
+            }
+            window.print();
+        }
+
+        const puertoMapping = {
+            // West Coast
+            ARIZONA: "California", CALIFORNIA: "California", COLORADO: "California", HAWAII: "California", IDAHO: "California", MONTANA: "California", NEVADA: "California", NEW_MEXICO: "California", OREGON: "California", UTAH: "California", WASHINGTON: "California",
+            // Southeast/Gulf
+            ALABAMA: "Florida", ARKANSAS: "Florida", FLORIDA: "Florida", GEORGIA: "Florida", LOUISIANA: "Florida", MISSISSIPPI: "Florida", OKLAHOMA: "Florida", TENNESSEE: "Florida", TEXAS: "Florida",
+            // Northeast/Midwest
+            CONNECTICUT: "Philadelphia", DELAWARE: "Philadelphia", INDIANA: "Philadelphia", IOWA: "Philadelphia", KANSAS: "Philadelphia", KENTUCKY: "Philadelphia", MAINE: "Philadelphia", MARYLAND: "Philadelphia", MASSACHUSETTS: "Philadelphia", MICHIGAN: "Philadelphia", MINNESOTA: "Philadelphia", MISSOURI: "Philadelphia", NEW_HAMPSHIRE: "Philadelphia", NEW_JERSEY: "Philadelphia", NEW_YORK: "Philadelphia", NORTH_CAROLINA: "Philadelphia", OHIO: "Philadelphia", PENNSYLVANIA: "Philadelphia", RHODE_ISLAND: "Philadelphia", SOUTH_CAROLINA: "Philadelphia", VERMONT: "Philadelphia", VIRGINIA: "Philadelphia", WEST_VIRGINIA: "Philadelphia", WISCONSIN: "Philadelphia"
+        };
+        const fleteMatriz = {
+            California: { pequeno: 1170, especial: 1270, mediano: 1370, grande: 1470, extra: 1570, extra2: 0, moto: 325 },
+            Florida: { pequeno: 955, especial: 1045, mediano: 1085, grande: 1475, extra: 1575, extra2: 0, moto: 325 },
+            Philadelphia: { pequeno: 950, especial: 1050, mediano: 1175, grande: 1470, extra: 1570, extra2: 0, moto: 325 }
+        };
+
+        const daiRates = { 
+            auto_menor_1300: 0.25, auto_mayor_1300: 0.25, auto_mayor_2000: 0.30, 
+            auto_mayor_2000_awd: 0.30, pickups: 0.05, vehiculo_4x4: 0.30, 
+            camion_4_20: 0.01, moto_hasta_250: 0.15, moto_mayor_250: 0.15 
+        };
+
+        function inicializarCalculadora() {
+            const sEstado = document.getElementById("estado");
+            if (typeof gruasMatus !== 'undefined') {
+                Object.keys(gruasMatus).sort().forEach(estado => {
+                    const opt = document.createElement("option"); opt.value = estado;
+                    opt.textContent = estado.replace(/_/g, " "); sEstado.appendChild(opt);
+                });
+            }
+        }
+
+        function cargarPatios() {
+            const estado = document.getElementById("estado").value;
+            const sPatio = document.getElementById("patio");
+            sPatio.innerHTML = "";
+            if (gruasMatus[estado]) {
+                gruasMatus[estado]
+                    .filter(p => /IAAI/i.test(p.ciudad))
+                    .forEach(p => {
+                        const opt = document.createElement("option");
+                        opt.value = p.precio; 
+                        opt.dataset.ciudad = p.ciudad;
+                        opt.textContent = p.ciudad; 
+                        sPatio.appendChild(opt);
+                    });
+            }
+        }
+
+        function filtrarPatios() {
+            const busqueda = document.getElementById("buscar").value.toLowerCase();
+            const estado = document.getElementById("estado").value;
+            const sPatio = document.getElementById("patio");
+            sPatio.innerHTML = "";
+            if (gruasMatus[estado]) {
+                gruasMatus[estado]
+                    .filter(p => /IAAI/i.test(p.ciudad) && p.ciudad.toLowerCase().includes(busqueda))
+                    .forEach(p => {
+                        const opt = document.createElement("option");
+                        opt.value = p.precio; 
+                        opt.dataset.ciudad = p.ciudad;
+                        opt.textContent = p.ciudad; 
+                        sPatio.appendChild(opt);
+                    });
+            }
+        }
+
+        function buscarGruaPTP(estado, ciudadNombre) {
+            if (typeof gruasPTP === 'undefined' || !gruasPTP[estado] || !ciudadNombre) return null;
+            const normalizada = ciudadNombre
+                .replace(/\(.*?\)/g, '')
+                .replace(/[^a-zA-Z0-9\s]/g, ' ')
+                .trim()
+                .toLowerCase();
+            // Filtrar opciones válidas y excluir Manheim
+            const opciones = Object.entries(gruasPTP[estado])
+                .filter(([key, price]) => price !== null && price !== undefined && !/manheim/i.test(key));
+            
+            // 1. Buscar exact match primero
+            const exactMatch = opciones.find(([key]) => key.toLowerCase().trim() === normalizada);
+            if (exactMatch) return exactMatch[1];
+            
+            // 2. Buscar coincidencia parcial
+            let match = opciones.find(([key]) => key.toLowerCase().includes(normalizada));
+            if (match) return match[1];
+            
+            // 3. Buscar por palabras clave (tokens)
+            const partes = normalizada.split(/\s+/).filter(Boolean).filter(tok => tok.length > 2);
+            for (const [key, value] of opciones) {
+                const lowerKey = key.toLowerCase();
+                if (partes.some(tok => lowerKey.includes(tok))) {
+                    return value;
+                }
+            }
+            
+            // 4. Fallback a "todas las ciudades"
+            const fallback = opciones.find(([key]) => /todas|all|todos/i.test(key.toLowerCase()));
+            if (fallback) return fallback[1];
+            return null;
+        }
+
+        function calcular() {
+            const bidVal = parseFloat(document.getElementById("bid_subasta").value) || 0;
+            const factura = parseFloat(document.getElementById("factura").value) || 0;
+            const otros = parseFloat(document.getElementById("otros").value) || 0;
+            const tipo = document.getElementById("tipo").value;
+            const tamano = document.getElementById("tamano").value;
+            const estado = document.getElementById("estado").value;
+            const patioSelect = document.getElementById("patio");
+            const costoGruaMatus = parseFloat(patioSelect.value) || 0;
+            const ciudadNombre = patioSelect.options[patioSelect.selectedIndex]?.dataset.ciudad;
+            
+            let facturaIAA = factura;
+            if (!isNaN(bidVal) && bidVal > 0) {
+                if (modoMoto && typeof Motocicleta === 'function') {
+                    const motoData = Motocicleta(bidVal);
+                    facturaIAA = bidVal + motoData.total;
+                } else if (!modoMoto && typeof calcularFeesIAA === 'function') {
+                    facturaIAA = bidVal + calcularFeesIAA(bidVal);
+                }
+            }
+
+            if (!estado || factura <= 0) return alert("Complete los datos obligatorios.");
+
+            const tamanoPTP = document.getElementById("tamanoPTP").value;
+            const puerto = puertoMapping[estado] || "Florida";
+            const puertoPTP = (typeof puertoMappingPTP !== 'undefined') ? puertoMappingPTP[estado] || "Florida" : "Florida";
+            const fleteM = fleteMatriz[puerto][tamano];
+            const fleteP = (typeof fleteMatrizPTP !== 'undefined' && fleteMatrizPTP[puertoPTP]) ? fleteMatrizPTP[puertoPTP][tamanoPTP] : null;
+            const gruaPTP = buscarGruaPTP(estado, ciudadNombre);
+            const isPTPDisponible = (fleteP !== null) && (gruaPTP !== null);
+
+            const generarData = (flete, grua) => {
+                const bl = (flete === fleteM) ? 20 : 23;
+                const pe = 43;
+                const cif = factura + flete + grua + bl;
+                const pDai = daiRates[tipo];
+                const dai = cif * pDai;
+                const mat = cif * 0.057;
+                const iva = (cif + dai) * 0.13;
+                const tramitador = 100;
+                const total = cif + dai + mat + iva + tramitador + pe + otros;
+                return { cif, flete, grua, bl, dai, pDai, mat, iva, tramitador, pe, total, otros, available: true };
+            };
+
+            const res1 = generarData(fleteM, costoGruaMatus);
+            const res2 = isPTPDisponible ? generarData(fleteP, gruaPTP) : { available: false, reason: 'No disponible, A cotizar manualmente' };
+            const esOp1Mejor = res1.total <= (res2.available ? res2.total : Number.POSITIVE_INFINITY);
+
+            const renderCard = (titulo, d, colorCls, recomendado, ofertaBid, facturaValor) => {
+                if (!d.available) {
+                    return `
+                    <div class="opt-card unavailable-card">
+                        <div class="opt-header ${colorCls}">${titulo}</div>
+                        <div class="unavailable-message">${d.reason}</div>
+                    </div>`;
+                }
+
+                return `
+                <div class="opt-card">
+                    ${recomendado ? '<div class="recommended-badge"><i class="fas fa-star"></i> RECOMENDADO</div>' : ''}
+                    <div class="opt-header ${colorCls}">${titulo}</div>
+                    
+                    <div class="cat-tag"><i class="fas fa-gavel"></i> Oferta Subasta</div>
+                    <div class="item-row"><span>Oferta Final Subasta:</span><b>$${ofertaBid.toLocaleString('en-US',{minimumFractionDigits:2})}</b></div>
+                    <div class="item-row"><span>Valor Factura Subasta:</span><b>$${facturaValor.toLocaleString('en-US',{minimumFractionDigits:2})}</b></div>
+                    
+                    <div class="opt-cif"><span>VALOR CIF ADUANA:</span><b>$${d.cif.toLocaleString('en-US',{minimumFractionDigits:2})}</b></div>
+                    
+                    <div class="cat-tag"><i class="fas fa-ship"></i> Flete</div>
+                    <div class="item-row"><span>Flete Marítimo:</span><b>$${d.flete.toFixed(2)}</b></div>
+                    <div class="item-row"><span>Grúa Interna:</span><b>$${d.grua.toFixed(2)}</b></div>
+                    
+                    <div class="cat-tag"><i class="fas fa-university"></i> Impuestos Detallados</div>
+                    <div class="item-row"><span>DAI (${(d.pDai * 100).toFixed(0)}%):</span><b>$${d.dai.toFixed(2)}</b></div>
+                    <div class="item-row"><span>IVA (13%):</span><b>$${d.iva.toFixed(2)}</b></div>
+                    <div class="item-row"><span>Matrícula (5.7%):</span><b>$${d.mat.toFixed(2)}</b></div>
+                    <div class="item-row"><span>Documentación BL:</span><b>$${d.bl.toFixed(2)}</b></div>
+                    <div class="item-row"><span>Pago Puerto (PE):</span><b>$${d.pe.toFixed(2)}</b></div>
+                    <div class="item-row total-impuestos"><span>Total Impuestos (No real, Aprox):</span><b>$${(d.dai + d.iva + d.mat + d.bl + d.pe).toFixed(2)}</b></div>
+                    
+                    <div class="cat-tag"><i class="fas fa-concierge-bell"></i> Otros Gastos</div>
+                    <div class="item-row"><span>Tramitador:</span><b>$${d.tramitador.toFixed(2)}</b></div>
+                    <div class="item-row"><span>Otros:</span><b>$${d.otros.toFixed(2)}</b></div>
+                    
+                    <div class="total-box"><span>COSTO TOTAL APROXIMADO FUERA DE ADUANA.</span><h2>$${d.total.toLocaleString('en-US',{minimumFractionDigits:2})}</h2></div>
+                </div>`;
+            };
+
+            document.getElementById("imp-vehiculo").textContent = document.getElementById("vehiculo").value.trim() || "-";
+            document.getElementById("imp-lote").textContent = document.getElementById("lote").value.trim() || "-";
+            const preview = document.getElementById("preview-imagen");
+            const impPreview = document.getElementById("imp-preview-imagen");
+            const impImagen = document.getElementById("imp-imagen");
+            if (preview.style.display === "block") {
+                impPreview.src = preview.src;
+                impImagen.style.display = "block";
+            } else {
+                impImagen.style.display = "none";
+            }
+            document.getElementById("report-info").style.display = "flex";
+            document.getElementById("pdf-columnas").innerHTML = renderCard("Naviera 1", res1, "", esOp1Mejor, bidVal, facturaIAA) + renderCard("Naviera 2 (Verificar manualmente)", res2, "blue", !esOp1Mejor, bidVal, facturaIAA);
+            const btnPdf = document.getElementById("btnPdf");
+            btnPdf.style.display = "block";
+            btnPdf.disabled = false;
+            document.getElementById("disclaimer-text").style.display = "block";
+        }
+
+        window.onload = () => {
+            inicializarCalculadora();
+            configurarDropzone();
+        };
+    </script>
+</body>
+</html>

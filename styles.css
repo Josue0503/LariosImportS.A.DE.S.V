@@ -1,0 +1,174 @@
+/* Estilos Generales */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f7f6;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 900px;
+    margin: auto;
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Formulario */
+.grid-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    background: #001f3f;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+button:hover {
+    background: #003366;
+}
+
+/* Estilos de las Cards de Resultado */
+#pdf-columnas {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.total-impuestos {
+    background: #eff6ff;
+    padding: 10px 15px;
+    border-radius: 6px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 8px 15px 0;
+}
+
+.toggle-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 14px;
+    width: 100%;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.toggle-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    transition: left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    z-index: -1;
+    border-radius: 50px;
+}
+
+.toggle-btn:hover {
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    transform: translateY(-2px);
+}
+
+.toggle-btn.active {
+    box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+}
+
+.toggle-btn.active::before {
+    left: 0;
+}
+
+.toggle-label {
+    display: inline-block;
+    min-width: 80px;
+    position: relative;
+    z-index: 1;
+}
+
+.card-header {
+    padding: 15px;
+    color: white;
+    text-align: center;
+    font-weight: bold;
+}
+
+.cif-val {
+    padding: 15px;
+    text-align: center;
+    background: #f9f9f9;
+    border-bottom: 1px solid #eee;
+}
+
+.section-tag {
+    background: #eee;
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #666;
+}
+
+.row-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 15px;
+    border-bottom: 1px solid #f1f1f1;
+    font-size: 14px;
+}
+
+.total-imp {
+    background: #fff3e0;
+    font-weight: bold;
+}
+
+.total-estimado-box {
+    padding: 20px;
+    text-align: center;
+    background: #f4f7f6;
+}
+
+.total-estimado-box h2 {
+    margin: 5px 0 0 0;
+    color: #2c3e50;
+}
+
+/* Responsivo para móviles */
+@media (max-width: 600px) {
+    .grid-form, #pdf-columnas {
+        grid-template-columns: 1fr;
+    }
+}

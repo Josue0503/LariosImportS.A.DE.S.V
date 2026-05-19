@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso | Larios Import</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #053b82;
+            --secondary: #001f3f;
+            --accent: #27ae60; 
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        body {
+            background: linear-gradient(rgba(0, 31, 63, 0.85), rgba(5, 59, 130, 0.85)), 
+                        url('imagenes/fondo.jpeg'); 
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- Pantalla de Bienvenida Animada --- */
+        #loader {
+            display: none;
+            text-align: center;
+            color: white;
+            z-index: 100;
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        .welcome-logo {
+            width: 300px;
+            margin-bottom: 30px;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+            animation: pulse 2s infinite;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255,255,255,0.1);
+            border-top: 5px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* --- Estructura Principal --- */
+        .main-wrapper {
+            width: 90%;
+            max-width: 1100px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .info-section {
+            flex: 1;
+            color: white;
+            padding-right: 40px;
+        }
+
+        .info-section .big-logo {
+            width: 320px;
+            margin-bottom: 30px;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+        }
+
+        .features {
+            display: flex;
+            gap: 30px;
+            margin-top: 60px;
+        }
+
+        .feature-item { flex: 1; }
+        .feature-item i {
+            font-size: 20px;
+            margin-bottom: 15px;
+            display: inline-block;
+            border: 1px solid rgba(255,255,255,0.6);
+            width: 45px; height: 45px;
+            line-height: 45px; text-align: center;
+            border-radius: 50%;
+        }
+
+        .feature-item h4 { margin: 5px 0; font-size: 16px; letter-spacing: 1px; }
+        .feature-item p { font-size: 12px; opacity: 0.7; line-height: 1.5; }
+
+        .login-card {
+            background: white;
+            padding: 50px 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+        }
+
+        .login-card img { width: 200px; margin-bottom: 20px; }
+        .login-card h2 { color: var(--secondary); font-size: 26px; margin-bottom: 35px; font-weight: 600; }
+
+        .input-group { position: relative; margin-bottom: 20px; }
+        .input-group i {
+            position: absolute; left: 15px; top: 50%;
+            transform: translateY(-50%); color: #888; font-size: 18px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 15px 14px 50px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            box-sizing: border-box;
+            font-size: 16px;
+            background: #f9f9f9;
+            transition: all 0.3s;
+        }
+
+        input:focus { 
+            border-color: var(--primary); 
+            background: white;
+            box-shadow: 0 0 8px rgba(5, 59, 130, 0.1);
+            outline: none; 
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        button:hover { 
+            background: var(--primary); 
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        @media (max-width: 900px) {
+            body, html { overflow: auto; }
+            .info-section { display: none; }
+            .main-wrapper { justify-content: center; }
+            .features { flex-direction: column; gap: 20px; }
+        }
+
+        @media (max-width: 640px) {
+            body, html { overflow: auto; }
+            .main-wrapper { flex-direction: column; padding: 20px 0; }
+            .login-card { padding: 28px 24px; max-width: 100%; box-shadow: 0 18px 30px rgba(0,0,0,0.25); }
+            .login-card img { width: 160px; }
+            .login-card h2 { font-size: 22px; margin-bottom: 24px; }
+            .input-group { margin-bottom: 16px; }
+            input { padding: 13px 15px 13px 48px; font-size: 15px; }
+            button { padding: 14px; font-size: 15px; }
+            .feature-item { gap: 15px; }
+            .feature-item h4 { font-size: 15px; }
+            .feature-item p { font-size: 13px; }
+            .big-logo { width: 220px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Pantalla de Bienvenida (Se activa al validar) -->
+    <div id="loader">
+        <img src="imagenes/blanco.PNG" alt="Larios Import" class="welcome-logo">
+        <div class="spinner"></div>
+        <p style="font-size: 18px; letter-spacing: 1px; opacity: 0.8;">Iniciando sistema...</p>
+        <h2 style="color: var(--accent); margin-top: 10px; font-size: 28px;">¡Bienvenido, Stanley Villatoro!</h2>
+    </div>
+
+    <!-- Sección de Login -->
+    <div id="login-section" class="main-wrapper">
+        <div class="info-section">
+            <img src="imagenes/blanco.PNG" alt="Larios Import" class="big-logo">
+            <div class="features">
+                <div class="feature-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <h4>Seguridad</h4>
+                    <p>Protegemos tu información con los más altos estándares.</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-truck-loading"></i>
+                    <h4>Confianza</h4>
+                    <p>Más de 10 años de experiencia en importación de vehículos.</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-handshake"></i>
+                    <h4>Respaldo</h4>
+                    <p>Conexión directa y segura con subastas en EE. UU.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="login-card">
+            <form id="loginForm" onsubmit="validarEntrada(event)">
+                <img src="imagenes/logo.PNG" alt="Larios Logo">
+                <h2>Iniciar Sesión</h2>
+                
+                <div class="input-group">
+                    <i class="fas fa-user-circle"></i>
+                    <input type="text" id="userInput" name="userInput" placeholder="Usuario" autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-key"></i>
+                    <input type="password" id="passInput" name="passInput" placeholder="Contraseña">
+                </div>
+                
+                <button type="submit" id="btnEntrar">Entrar</button>
+            </form>
+        </div>
+        </div>
+    </div>
+
+    <!-- Script integrado o externo -->
+    <script src="validacion.js"></script>
+    
+</body>
+</html>
